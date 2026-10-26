@@ -1,0 +1,34 @@
+APPLICATION BML - PROCÉDURES CHAUFFEURS
+=======================================
+Les chauffeurs consultent. Seul l'administrateur (code secret) peut ajouter des PDF.
+
+AJOUTER DES PDF DANS L'APPLICATION
+  1. Sur l'accueil, appuyez 5 fois sur le logo BML : l'écran « Gérer » s'ouvre (invisible pour les chauffeurs).
+  2. Saisissez le code administrateur (à définir dans www/config.js avant de fabriquer l'APK ; 1234 par défaut : CHANGEZ-LE).
+  3. Choisissez le thème, puis « Choisir des PDF » (plusieurs à la fois possible). Le nom du fichier = le titre.
+  4. Gérez aussi les thèmes, renommez/supprimez, choisissez la procédure d'urgence (bouton rouge).
+  5. « Verrouiller et quitter » rend la main au chauffeur. L'écran se reverrouille aussi tout seul en quittant.
+  Les PDF restent enregistrés dans le téléphone et fonctionnent sans connexion.
+  Le code protège contre l'usage normal ; il est lisible par quelqu'un de très technique qui ouvrirait l'APK.
+
+PLUSIEURS TÉLÉPHONES
+  Un PDF ajouté dans l'app n'existe que sur CE téléphone. Pour envoyer les mêmes PDF à tous les téléphones d'un coup :
+  - Mettez vos PDF dans www/contenu/<Thème>/ puis double-clic sur publier.bat (ou node publier.js).
+  - Mettez le dossier "contenu" en ligne (https, avec Access-Control-Allow-Origin: *), puis écrivez son adresse
+    dans www/config.js (serveur:"https://.../contenu/") avant de fabriquer l'APK.
+  Les téléphones téléchargent alors tout seuls les procédures du serveur ; celles ajoutées à la main restent.
+
+FABRIQUER L'APK (Node.js + Android Studio), une seule fois :
+  npm init -y
+  npm i @capacitor/core @capacitor/cli @capacitor/android
+  npx cap init "BML Procédures" fr.bml.procedures --web-dir www
+  npx cap add android
+  npx cap sync
+  npx cap open android     -> Android Studio : Build > Generate Signed Bundle / APK
+
+POUR QUE LES PDF NE DISPARAISSENT PAS (déploiement MDM)
+  - Gardez le même identifiant (fr.bml.procedures) et la MÊME clé de signature (keystore) à chaque version ;
+    sauvegardez le keystore et son mot de passe.
+  - Mises à jour par le MDM en mode « mise à jour », jamais désinstallation/réinstallation
+    (désinstaller efface les PDF ajoutés à la main).
+  - Bloquez dans le MDM, si possible, la désinstallation et l'effacement des données de l'app.
